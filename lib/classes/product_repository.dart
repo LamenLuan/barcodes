@@ -1,20 +1,35 @@
 import 'package:barcodes/classes/product.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class ProductRepository {
   static Db? _db;
   static late DbCollection _productCollection;
+  static String? _connectionString;
+
+  static bool get isConnected => _db != null && _db!.isConnected;
 
   static Future<DbCollection> get productCollection async {
-    if (_db == null || !_db!.isConnected) await connect();
+    if (isConnected == false) await connect();
     return _productCollection;
   }
 
   static Future<void> connect() async {
-    _db = await Db.create(dotenv.env['CONNECTION_STRING']!);
+    _db = await Db.create(_connectionString!);
     await _db!.open(secure: true, tlsAllowInvalidCertificates: true);
     _productCollection = _db!.collection('Products');
+  }
+
+  static Future<bool> connectWithString(String connectionString) async {
+    _connectionString = connectionString;
+
+    try {
+      await connect();
+    } catch (e) {
+      _connectionString = null;
+      return false;
+    }
+
+    return true;
   }
 
   static Future<List<Product>> getProducts(String? nameFilter) async {

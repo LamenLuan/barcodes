@@ -1,17 +1,14 @@
 import 'dart:io';
 
-import 'package:barcodes/classes/product.dart';
 import 'package:barcodes/classes/product_repository.dart';
-import 'package:barcodes/components/scan_product_page.dart';
+import 'package:barcodes/components/main_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import 'classes/snack_bars.dart';
-import 'components/products_page.dart';
+import 'components/login_form.dart';
 
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
-  await dotenv.load(fileName: "config.env");
   runApp(const MyApp());
 }
 
@@ -36,15 +33,13 @@ class MyApp extends StatelessWidget {
       title: 'Barcodes',
       scaffoldMessengerKey: snackBarKey,
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: MyHomePage(title: 'Barcodes'),
+      home: MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -52,28 +47,35 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  void initState() {
+    super.initState();
+    openNextPage();
+  }
+
+  void openNextPage() async {
+    bool loginNeeded = true;
+    final prefs = await SharedPreferences.getInstance();
+    final connectionString = prefs.getString('connectionString');
+    if (connectionString != null && connectionString.isNotEmpty) {
+      var connected = await ProductRepository.connectWithString(
+        connectionString,
+      );
+      if (connected) loginNeeded = false;
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              loginNeeded ? const LoginForm() : const MainPage(),
+        ),
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.title)),
-      body: Padding(padding: const EdgeInsets.all(12), child: ProductsPage()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          Product? product = await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => ScanProductPage()),
-          );
-
-          if (context.mounted && product == null) {
-            SnackBars.showErrorSnackBar(context, 'Nenhum produto encontrado');
-            return;
-          }
-
-          ProductRepository.addProduct(product!);
-          setState(() {});
-        },
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
-      ),
-    );
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
