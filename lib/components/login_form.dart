@@ -1,3 +1,4 @@
+import 'package:barcodes/components/action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -15,6 +16,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late final TextEditingController _textController = TextEditingController();
+  bool loading = false;
 
   @override
   void dispose() {
@@ -24,6 +26,36 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    void onButtonPressed() async {
+      if (_formKey.currentState!.validate() == false) return;
+      setState(() => loading = true);
+
+      var connected = await ProductRepository.connectWithString(
+        _textController.text,
+      );
+
+      if (context.mounted == false) {
+        setState(() => loading = false);
+        return;
+      }
+
+      if (connected == false) {
+        SnackBars.showErrorSnackBar(context, 'String de conexão inválida');
+        setState(() => loading = false);
+        return;
+      }
+
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('connectionString', _textController.text);
+      setState(() => loading = false);
+
+      if (context.mounted == false) return;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainPage()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: Text('Acessar')),
       body: Form(
@@ -47,33 +79,9 @@ class _LoginFormState extends State<LoginForm> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 16.0),
-                child: ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate() == false) return;
-
-                    var connected = await ProductRepository.connectWithString(
-                      _textController.text,
-                    );
-
-                    if (context.mounted == false) return;
-
-                    if (connected == false) {
-                      SnackBars.showErrorSnackBar(
-                        context,
-                        'String de conexão inválida',
-                      );
-                      return;
-                    }
-
-                    final prefs = await SharedPreferences.getInstance();
-                    prefs.setString('connectionString', _textController.text);
-
-                    if (context.mounted == false) return;
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => const MainPage()),
-                    );
-                  },
+                child: ActionButton(
+                  onPressed: onButtonPressed,
+                  loading: loading,
                   child: const Text('Acessar'),
                 ),
               ),
