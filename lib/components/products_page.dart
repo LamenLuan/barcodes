@@ -19,10 +19,12 @@ class _ProductsPageState extends State<ProductsPage> {
   String? nameFilter;
   Timer? _debounce;
   String? expandedCard;
+  late Future<List<Product>> _productsFuture;
 
   @override
   void initState() {
     super.initState();
+    _productsFuture = ProductRepository.getProducts(nameFilter);
   }
 
   @override
@@ -37,6 +39,7 @@ class _ProductsPageState extends State<ProductsPage> {
     _debounce = Timer(const Duration(milliseconds: 500), () {
       setState(() {
         nameFilter = query;
+        _productsFuture = ProductRepository.getProducts(nameFilter);
       });
     });
   }
@@ -72,7 +75,9 @@ class _ProductsPageState extends State<ProductsPage> {
 
   void onCardDeleteButtonPressed(Product product) async {
     await ProductRepository.removeProduct(product);
-    setState(() {});
+    setState(() {
+      _productsFuture = ProductRepository.getProducts(nameFilter);
+    });
   }
 
   @override
@@ -83,7 +88,7 @@ class _ProductsPageState extends State<ProductsPage> {
         SearchInput(onChanged: onSearchInputChanged),
         Expanded(
           child: FutureBuilder(
-            future: ProductRepository.getProducts(nameFilter),
+            future: _productsFuture,
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
