@@ -1,8 +1,6 @@
 import 'package:barcodes/classes/product.dart';
+import 'package:barcodes/components/prices_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
-import '../classes/snack_bars.dart';
 
 class ProductCard extends StatefulWidget {
   const ProductCard({
@@ -61,14 +59,21 @@ class _ProductCardState extends State<ProductCard> {
   }
 
   void onCardTap() async {
-    await Clipboard.setData(ClipboardData(text: widget.product.barcode));
+    // await Clipboard.setData(ClipboardData(text: widget.product.barcode));
 
-    if (mounted == false) return;
-
-    SnackBars.showInformativeSnackBar(
+    await Navigator.push(
       context,
-      'Código EAN copiado para área de transferência!',
+      MaterialPageRoute(
+        builder: (context) => PricesPage(barcode: widget.product.barcode),
+      ),
     );
+
+    // if (mounted == false) return;
+
+    // SnackBars.showInformativeSnackBar(
+    //   context,
+    //   'Código EAN copiado para área de transferência!',
+    // );
   }
 
   @override
