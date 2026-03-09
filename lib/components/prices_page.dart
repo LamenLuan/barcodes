@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 
 import '../classes/product_info.dart';
 
@@ -19,24 +20,24 @@ class _PricesPageState extends State<PricesPage> {
 
   Future<List<ProductInfo>> getProducts() async {
     var contents = await rootBundle.loadString('test.json');
-    var result = jsonDecode(contents);
-    var produtos = result['produtos'];
+    var result = await jsonDecode(contents);
+    var products = result['produtos'];
     List<ProductInfo> productInfos = [];
 
-    for (var produto in produtos) {
-      var store = produto['estabelecimento'];
+    for (var product in products) {
+      var store = product['estabelecimento'];
+
       var productInfo = ProductInfo(
-        name: produto['desc'],
-        price: double.parse(produto['valor']),
-        date: DateTime.parse(produto['datahora']),
+        price: double.parse(product['valor']),
+        date: DateTime.parse(product['datahora']),
         storeName: store['nm_emp'],
-        storeAddress:
-            '${store['tp_logr']} ${store['nm_logr']},'
-            ' ${store['nr_logr']}, ${store['complemento']}',
+        storeAddress: getAddress(store),
       );
 
       productInfos.add(productInfo);
     }
+
+    productInfos.sort((a, b) => a.price.compareTo(b.price));
 
     return productInfos;
   }
@@ -49,6 +50,8 @@ class _PricesPageState extends State<PricesPage> {
 
   @override
   Widget build(BuildContext context) {
+    var formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
+
     return Scaffold(
       appBar: AppBar(title: Text('Prices')),
       body: Padding(
@@ -82,7 +85,32 @@ class _PricesPageState extends State<PricesPage> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       var product = snapshot.data![index];
-                      return Column(children: [Text(product.name)]);
+                      return Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Column(
+                          children: [
+                            Row(
+                              spacing: 12,
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(formatter.format(product.price)),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  spacing: 2,
+                                  children: [
+                                    Text(product.storeName),
+                                    Text(
+                                      product.storeAddress,
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
                     },
                   );
                 },
@@ -92,5 +120,25 @@ class _PricesPageState extends State<PricesPage> {
         ),
       ),
     );
+  }
+
+  String getAddress(store) {
+    var address = '';
+
+    var name = store['nm_logr'];
+    if (name == null) return address;
+
+    var type = store['tp_logr'];
+    if (type != null) address = '$type ';
+
+    address += name;
+
+    var number = store['nr_logr'];
+    if (number != null) address += ', $number';
+
+    var neighboorhood = store['bairro'];
+    if (neighboorhood != null) address += ', $neighboorhood';
+
+    return address;
   }
 }

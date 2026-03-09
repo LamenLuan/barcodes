@@ -59,21 +59,12 @@ class _ProductCardState extends State<ProductCard> {
   }
 
   void onCardTap() async {
-    // await Clipboard.setData(ClipboardData(text: widget.product.barcode));
-
     await Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PricesPage(barcode: widget.product.barcode),
       ),
     );
-
-    // if (mounted == false) return;
-
-    // SnackBars.showInformativeSnackBar(
-    //   context,
-    //   'Código EAN copiado para área de transferência!',
-    // );
   }
 
   @override
