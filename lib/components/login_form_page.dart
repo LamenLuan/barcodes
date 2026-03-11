@@ -64,7 +64,7 @@ class _LoginFormState extends State<LoginForm> {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
+            children: [
               TextFormField(
                 controller: _textController,
                 decoration: const InputDecoration(

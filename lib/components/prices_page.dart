@@ -19,6 +19,9 @@ class _PricesPageState extends State<PricesPage> {
   late Future<List<ProductInfo>> _productsFuture;
 
   Future<List<ProductInfo>> getProducts() async {
+    // var response = http.get(
+    //   Uri.parse('https://jsonplaceholder.typicode.com/albums/1'),
+    // );
     var contents = await rootBundle.loadString('test.json');
     var result = await jsonDecode(contents);
     var products = result['produtos'];
@@ -53,7 +56,12 @@ class _PricesPageState extends State<PricesPage> {
     var formatter = NumberFormat.currency(locale: 'pt_BR', symbol: 'R\$');
 
     return Scaffold(
-      appBar: AppBar(title: Text('Prices')),
+      appBar: AppBar(
+        title: Text('Preços'),
+        actions: [
+          IconButton(onPressed: onLogoutPressed, icon: Icon(Icons.settings)),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(12),
         child: Column(
@@ -136,9 +144,11 @@ class _PricesPageState extends State<PricesPage> {
     var number = store['nr_logr'];
     if (number != null) address += ', $number';
 
-    var neighboorhood = store['bairro'];
-    if (neighboorhood != null) address += ', $neighboorhood';
+    var neighbourhood = store['bairro'];
+    if (neighbourhood != null) address += ', $neighbourhood';
 
     return address;
   }
+
+  void onLogoutPressed() {}
 }

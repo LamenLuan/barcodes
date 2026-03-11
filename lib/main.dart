@@ -5,7 +5,7 @@ import 'package:barcodes/components/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'components/login_form.dart';
+import 'components/login_form_page.dart';
 
 void main() async {
   HttpOverrides.global = MyHttpOverrides();
