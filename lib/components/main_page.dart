@@ -1,3 +1,4 @@
+import 'package:barcodes/classes/shared_prefs_keys.dart';
 import 'package:barcodes/components/products_page.dart';
 import 'package:barcodes/components/scan_product_page.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,7 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   void onLogoutPressed() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('connectionString', '');
+    await prefs.setString(SharedPrefsKeys.connectionString, '');
 
     if (mounted == false) return;
     Navigator.pushReplacement(

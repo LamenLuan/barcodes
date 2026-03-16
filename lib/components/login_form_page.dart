@@ -1,3 +1,4 @@
+import 'package:barcodes/classes/shared_prefs_keys.dart';
 import 'package:barcodes/components/action_button.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -46,7 +47,7 @@ class _LoginFormState extends State<LoginForm> {
       }
 
       final prefs = await SharedPreferences.getInstance();
-      prefs.setString('connectionString', _textController.text);
+      prefs.setString(SharedPrefsKeys.connectionString, _textController.text);
       setState(() => loading = false);
 
       if (context.mounted == false) return;

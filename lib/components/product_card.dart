@@ -1,6 +1,10 @@
 import 'package:barcodes/classes/product.dart';
 import 'package:barcodes/components/prices_page.dart';
+import 'package:barcodes/components/select_city_page.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../classes/shared_prefs_keys.dart';
 
 class ProductCard extends StatefulWidget {
   const ProductCard({
@@ -59,6 +63,20 @@ class _ProductCardState extends State<ProductCard> {
   }
 
   void onCardTap() async {
+    final prefs = await SharedPreferences.getInstance();
+    final cityName = prefs.getString(SharedPrefsKeys.cityHash);
+
+    if (mounted == false) return;
+
+    if (cityName == null || cityName.isEmpty) {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SelectCityPage()),
+      );
+    }
+
+    if (mounted == false) return;
+
     await Navigator.push(
       context,
       MaterialPageRoute(

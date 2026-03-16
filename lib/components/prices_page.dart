@@ -1,10 +1,13 @@
 import 'dart:convert';
 
+import 'package:barcodes/components/select_city_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../classes/product_info.dart';
+import '../classes/shared_prefs_keys.dart';
 
 class PricesPage extends StatefulWidget {
   const PricesPage({super.key, required this.barcode});
@@ -19,9 +22,11 @@ class _PricesPageState extends State<PricesPage> {
   late Future<List<ProductInfo>> _productsFuture;
 
   Future<List<ProductInfo>> getProducts() async {
-    // var response = http.get(
-    //   Uri.parse('https://jsonplaceholder.typicode.com/albums/1'),
-    // );
+    final prefs = await SharedPreferences.getInstance();
+    final cityName = prefs.getString(SharedPrefsKeys.cityHash);
+
+    if (cityName == null || cityName.isEmpty) return [];
+
     var contents = await rootBundle.loadString('test.json');
     var result = await jsonDecode(contents);
     var products = result['produtos'];
@@ -59,7 +64,10 @@ class _PricesPageState extends State<PricesPage> {
       appBar: AppBar(
         title: Text('Preços'),
         actions: [
-          IconButton(onPressed: onLogoutPressed, icon: Icon(Icons.settings)),
+          IconButton(
+            onPressed: onSettingsPressed,
+            icon: Icon(Icons.edit_location_alt_outlined),
+          ),
         ],
       ),
       body: Padding(
@@ -150,5 +158,13 @@ class _PricesPageState extends State<PricesPage> {
     return address;
   }
 
-  void onLogoutPressed() {}
+  void onSettingsPressed() async {
+    await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => SelectCityPage()),
+    );
+    setState(() {
+      _productsFuture = getProducts();
+    });
+  }
 }

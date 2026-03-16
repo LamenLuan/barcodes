@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:barcodes/classes/product_repository.dart';
+import 'package:barcodes/classes/shared_prefs_keys.dart';
 import 'package:barcodes/components/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -55,7 +56,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void openNextPage() async {
     bool loginNeeded = true;
     final prefs = await SharedPreferences.getInstance();
-    final connectionString = prefs.getString('connectionString');
+    final connectionString = prefs.getString(SharedPrefsKeys.connectionString);
     if (connectionString != null && connectionString.isNotEmpty) {
       var connected = await ProductRepository.connectWithString(
         connectionString,
