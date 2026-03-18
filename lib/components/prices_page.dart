@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:barcodes/components/select_city_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -23,12 +23,17 @@ class _PricesPageState extends State<PricesPage> {
 
   Future<List<ProductInfo>> getProducts() async {
     final prefs = await SharedPreferences.getInstance();
-    final cityName = prefs.getString(SharedPrefsKeys.cityHash);
+    final cityHash = prefs.getString(SharedPrefsKeys.cityHash);
 
-    if (cityName == null || cityName.isEmpty) return [];
+    if (cityHash == null || cityHash.isEmpty) return [];
 
-    var contents = await rootBundle.loadString('test.json');
-    var result = await jsonDecode(contents);
+    final response = await http.get(
+      Uri.parse(
+        'https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=$cityHash&gtin=${widget.barcode}',
+      ),
+    );
+
+    var result = await jsonDecode(response.body);
     var products = result['produtos'];
     List<ProductInfo> productInfos = [];
 
