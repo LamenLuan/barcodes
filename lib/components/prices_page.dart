@@ -92,6 +92,7 @@ class _PricesPageState extends State<PricesPage> {
                       child: Text('Um erro ocorreu ao consultar os produtos'),
                     );
                   }
+
                   if (snapshot.hasData == false || snapshot.data!.isEmpty) {
                     return const Center(
                       child: Text(
@@ -106,6 +107,7 @@ class _PricesPageState extends State<PricesPage> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       var product = snapshot.data![index];
+
                       return Padding(
                         padding: const EdgeInsets.all(8),
                         child: Column(
@@ -115,20 +117,37 @@ class _PricesPageState extends State<PricesPage> {
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(formatter.format(product.price)),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  spacing: 2,
-                                  children: [
-                                    Text(product.storeName),
-                                    Text(
-                                      product.storeAddress,
-                                      style: TextStyle(fontSize: 12),
-                                    ),
-                                  ],
+                                Text(
+                                  formatter.format(product.price),
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    spacing: 2,
+                                    children: [
+                                      Text(
+                                        product.storeName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      Text(
+                                        product.storeAddress,
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
+                            const Divider(),
                           ],
                         ),
                       );
