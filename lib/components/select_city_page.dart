@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:barcodes/classes/location_service.dart';
 import 'package:barcodes/classes/parana_cities_repository.dart';
 import 'package:barcodes/classes/shared_prefs_keys.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -50,6 +51,8 @@ class _SelectCityPageState extends State<SelectCityPage> {
                 ),
                 onChanged: (String? value) async {
                   if (value == null || value.isEmpty) return;
+
+                  var position = await LocationService.determinePosition();
 
                   final response = await http.get(
                     Uri.parse(

@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:barcodes/classes/location_service.dart';
+import 'package:barcodes/classes/menor_preco_service.dart';
 import 'package:barcodes/components/select_city_page.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -27,9 +29,16 @@ class _PricesPageState extends State<PricesPage> {
 
     if (cityHash == null || cityHash.isEmpty) return [];
 
+    var position = await LocationService.determinePosition();
+
+    var positionHash = MenorPrecoService.getLocationHash([
+      position.longitude / 180 * 100,
+      position.latitude / 90 * 100,
+    ]);
+
     final response = await http.get(
       Uri.parse(
-        'https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=$cityHash&gtin=${widget.barcode}',
+        'https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=$positionHash&gtin=${widget.barcode}',
       ),
     );
 
