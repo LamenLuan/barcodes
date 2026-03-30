@@ -39,5 +39,3 @@ class MenorPrecoService {
     return output;
   }
 }
-
-// 6gs3687kzupu

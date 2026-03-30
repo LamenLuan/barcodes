@@ -38,7 +38,7 @@ class _PricesPageState extends State<PricesPage> {
 
     final response = await http.get(
       Uri.parse(
-        'https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=$positionHash&gtin=${widget.barcode}',
+        'https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=$positionHash&gtin=${widget.barcode}&raio=1',
       ),
     );
 
