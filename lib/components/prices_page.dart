@@ -25,9 +25,7 @@ class _PricesPageState extends State<PricesPage> {
 
   Future<List<ProductInfo>> getProducts() async {
     final prefs = await SharedPreferences.getInstance();
-    final cityHash = prefs.getString(SharedPrefsKeys.cityHash);
-
-    if (cityHash == null || cityHash.isEmpty) return [];
+    final searchRadius = prefs.getDouble(SharedPrefsKeys.searchRadius) ?? 1;
 
     var position = await LocationService.determinePosition();
 
@@ -38,7 +36,7 @@ class _PricesPageState extends State<PricesPage> {
 
     final response = await http.get(
       Uri.parse(
-        'https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=$positionHash&gtin=${widget.barcode}&raio=1',
+        'https://menorpreco.notaparana.pr.gov.br/api/v1/produtos?local=$positionHash&gtin=${widget.barcode}&raio=$searchRadius',
       ),
     );
 
@@ -192,10 +190,18 @@ class _PricesPageState extends State<PricesPage> {
   }
 
   void onSettingsPressed() async {
+    final prefs = await SharedPreferences.getInstance();
+    final searchRadius = prefs.getDouble(SharedPrefsKeys.searchRadius) ?? 1;
+
+    if (!mounted) return;
+
     await Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => SelectCityPage()),
+      MaterialPageRoute(
+        builder: (_) => SelectCityPage(searchRadius: searchRadius),
+      ),
     );
+
     setState(() {
       _productsFuture = getProducts();
     });
