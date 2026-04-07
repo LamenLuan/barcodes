@@ -5,11 +5,13 @@ class MenorPrecoService {
   static const double maxRange = 100;
   static const int outputLength = 12;
 
-  static String getLocationHash(List<double> values) {
+  static String getLocationHash(double longitude, double latitude) {
     String output = "";
     int currentCharValue = 0;
     int bitIndex = 0;
     int iteration = 0;
+
+    final values = [longitude / 180 * 100, latitude / 90 * 100];
     final ranges = values.map((v) => [minRange, maxRange]).toList();
 
     while (output.length < outputLength) {

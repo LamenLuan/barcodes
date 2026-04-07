@@ -26,13 +26,16 @@ class _PricesPageState extends State<PricesPage> {
   Future<List<ProductInfo>> getProducts() async {
     final prefs = await SharedPreferences.getInstance();
     final searchRadius = prefs.getDouble(SharedPrefsKeys.searchRadius) ?? 1;
+    var latitude = prefs.getDouble(SharedPrefsKeys.latitude);
+    var longitude = prefs.getDouble(SharedPrefsKeys.longitude);
 
-    var position = await LocationService.determinePosition();
+    if (latitude == null || longitude == null) {
+      var position = await LocationService.determinePosition();
+      latitude = position.latitude;
+      longitude = position.longitude;
+    }
 
-    var positionHash = MenorPrecoService.getLocationHash([
-      position.longitude / 180 * 100,
-      position.latitude / 90 * 100,
-    ]);
+    var positionHash = MenorPrecoService.getLocationHash(longitude, latitude);
 
     final response = await http.get(
       Uri.parse(

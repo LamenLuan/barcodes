@@ -6,6 +6,7 @@ import 'package:barcodes/components/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'classes/location_service.dart';
 import 'components/login_form_page.dart';
 
 void main() async {
@@ -55,8 +56,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void openNextPage() async {
     bool loginNeeded = true;
+    var position = await LocationService.determinePosition();
     final prefs = await SharedPreferences.getInstance();
+    prefs.setDouble(SharedPrefsKeys.latitude, position.latitude);
+    prefs.setDouble(SharedPrefsKeys.longitude, position.longitude);
     final connectionString = prefs.getString(SharedPrefsKeys.connectionString);
+
     if (connectionString != null && connectionString.isNotEmpty) {
       var connected = await ProductRepository.connectWithString(
         connectionString,
