@@ -1,11 +1,8 @@
 import 'dart:async';
 
-import 'package:barcodes/classes/product_repository.dart';
-import 'package:barcodes/components/card_form.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
-import '../classes/product.dart';
 import '../classes/snack_bars.dart';
 import '../main.dart';
 
@@ -47,41 +44,38 @@ class _ScanProductPageState extends State<ScanProductPage> {
       return;
     }
 
-    var product = await ProductRepository.getProduct(barcode.displayValue!);
-
-    if (product != null) {
-      manageErrorSnackBar('Código EAN já cadastrado');
-      return;
-    }
+    // var product = await ProductRepository.getProduct(barcode.displayValue!);
+    //
+    // if (product != null) {
+    //   manageErrorSnackBar('Código EAN já cadastrado');
+    //   return;
+    // }
 
     if (!mounted) return;
     setState(() => productDetected = true);
 
-    final productName = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CardForm(
-          formName: 'Registrar produto',
-          formValidator: (String? value) {
-            if (value == null || value.isEmpty) {
-              return 'O campo está vazio';
-            }
+    // final productName = await Navigator.push(
+    //   context,
+    //   MaterialPageRoute(
+    //     builder: (context) => CardForm(
+    //       formName: 'Registrar produto',
+    //       formValidator: (String? value) {
+    //         if (value == null || value.isEmpty) {
+    //           return 'O campo está vazio';
+    //         }
+    //
+    //         return null;
+    //       },
+    //     ),
+    //   ),
+    // );
+    //
+    // if (!mounted || productName == null || productName.isEmpty) {
+    //   setState(() => productDetected = false);
+    //   return;
+    // }
 
-            return null;
-          },
-        ),
-      ),
-    );
-
-    if (!mounted || productName == null || productName.isEmpty) {
-      setState(() => productDetected = false);
-      return;
-    }
-
-    Navigator.pop(
-      context,
-      Product(barcode: barcode.displayValue!, name: productName),
-    );
+    Navigator.pop(context, barcode.displayValue!);
   }
 
   @override

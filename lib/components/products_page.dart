@@ -9,13 +9,14 @@ import '../classes/product.dart';
 import 'card_form.dart';
 
 class ProductsPage extends StatefulWidget {
-  const ProductsPage({super.key});
+  const ProductsPage(GlobalKey<ProductsPageState> productsKey)
+    : super(key: productsKey);
 
   @override
-  State<ProductsPage> createState() => _ProductsPageState();
+  State<ProductsPage> createState() => ProductsPageState();
 }
 
-class _ProductsPageState extends State<ProductsPage> {
+class ProductsPageState extends State<ProductsPage> {
   String? nameFilter;
   Timer? _debounce;
   String? expandedCard;
@@ -33,14 +34,18 @@ class _ProductsPageState extends State<ProductsPage> {
     super.dispose();
   }
 
+  void refresh() {
+    setState(() {
+      _productsFuture = ProductRepository.getProducts(nameFilter);
+    });
+  }
+
   void onSearchInputChanged(String query) {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
 
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      setState(() {
-        nameFilter = query;
-        _productsFuture = ProductRepository.getProducts(nameFilter);
-      });
+      nameFilter = query;
+      refresh();
     });
   }
 
@@ -75,9 +80,7 @@ class _ProductsPageState extends State<ProductsPage> {
 
   void onCardDeleteButtonPressed(Product product) async {
     await ProductRepository.removeProduct(product);
-    setState(() {
-      _productsFuture = ProductRepository.getProducts(nameFilter);
-    });
+    refresh();
   }
 
   @override
