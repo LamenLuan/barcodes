@@ -1,16 +1,7 @@
 # barcodes
 
-A new Flutter project.
+This app allows people who live in Paraná and Pernambuco states in Brazil (limited by the API used) to store products by their barcode (via camera scanning) and search their prices at stores near the user (configurable distance radius) at any time to find the best deal
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Features
+- Maintain a product list, adding new ones by scanning barcode via cellphone camera
+- Check product prices in nearby stores 
